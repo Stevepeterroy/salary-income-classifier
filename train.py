@@ -6,6 +6,7 @@ import joblib
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.dummy import DummyClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
@@ -44,7 +45,8 @@ def train(csv_path, output_path):
     ])
     model.fit(x_train, y_train)
     prediction = model.predict(x_test)
-    metrics = {"holdout_rows": len(y_test), "accuracy": accuracy_score(y_test, prediction),
+    baseline = DummyClassifier(strategy="most_frequent").fit(x_train, y_train)
+    metrics = {"majority_baseline_accuracy": accuracy_score(y_test, baseline.predict(x_test)),"holdout_rows": len(y_test), "accuracy": accuracy_score(y_test, prediction),
                "classification_report": classification_report(y_test, prediction, output_dict=True)}
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
